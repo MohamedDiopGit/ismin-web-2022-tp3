@@ -1,11 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { BookDto } from './interface/Book.dto';
+import { readFile } from 'fs';
 
 @Injectable()
 export class BookService {
     private books: BookDto[] =[];
 
 
+    init(){
+        readFile('./dataset.json', 'utf8', (error, data) => {
+            if(error){
+            console.log(error);
+            return;
+            }
+            this.books = JSON.parse(data);
+        })
+    }
     addBook(book: BookDto){
         if(!this.books.find((value) => value.title === book.title)){ 
             this.books.push(book); 
