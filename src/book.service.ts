@@ -16,6 +16,7 @@ export class BookService {
             this.books = JSON.parse(data);
         })
     }
+    
     addBook(book: BookDto){
         if(!this.books.find((value) => value.title === book.title)){ 
             this.books.push(book); 
