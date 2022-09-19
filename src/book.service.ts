@@ -41,9 +41,7 @@ export class BookService implements OnModuleInit {
                     )}
                 ) 
             
-            ).subscribe()
-              
-            
+            ).subscribe() 
         }
         catch (err) {
             console.log('Err: $(err)');
