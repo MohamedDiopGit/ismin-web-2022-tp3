@@ -1,4 +1,5 @@
 import { IsDateString, IsString } from 'class-validator';
+import { ApiBook } from './ApiBook.dto';
 // npm i --save class-validator class-transformer
 
 export class BookDto {

@@ -1,20 +1,52 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { BookDto } from './interface/Book.dto';
 import { readFile } from 'fs/promises';
+import { HttpService } from '@nestjs/axios';
+import { AxiosResponse } from 'axios';
+import { tap, map, Observable } from 'rxjs';
+import { ApiBook } from './interface/ApiBook.dto';
 
 @Injectable()
 export class BookService implements OnModuleInit {
     private books: BookDto[] =[];
 
+    constructor(private readonly httpService: HttpService) {}
 
-    async onModuleInit() {
+    async onModuleInit() : Promise<void>{
+        // try{
+        //     let data = await readFile('./src/dataset.json');  
+        //     this.books = JSON.parse(data.toString());  
+        // }
+        // catch (err) {
+        //     console.log('Err: $(err)');
+        // }
+
         try{
-            let data = await readFile('./src/dataset.json');  
+            const dataApi = this.httpService.get<ApiBook[]>('https://api.npoint.io/40518b0773c787f94072');
+
+            const dataConverted = dataApi.pipe(
+                map( (response) => {return response.data}),
+                tap( (apibooks) => { 
+                    apibooks.forEach( (e) => {
+                        return this.books.push(
+                            {
+                                title: e.title,
+                                author : e.authors, 
+                                date : e.publication_date.toString()
+                            }
+                        )}
+                    )}
+                ) 
+            
+            ).subscribe()
+            const data = await readFile('./src/dataset.json');
             this.books = JSON.parse(data.toString());  
+            
         }
         catch (err) {
-            console.log(err)
+            console.log('Err: $(err)');
         }
+        console.log(this.books);
     }
 
     addBook(book: BookDto){
