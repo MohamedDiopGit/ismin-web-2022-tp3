@@ -22,6 +22,9 @@ export class BookService implements OnModuleInit {
         // }
 
         try{
+
+            const data = await readFile('./src/dataset.json');
+            this.books = JSON.parse(data.toString());
             const dataApi = this.httpService.get<ApiBook[]>('https://api.npoint.io/40518b0773c787f94072');
 
             const dataConverted = dataApi.pipe(
@@ -39,8 +42,7 @@ export class BookService implements OnModuleInit {
                 ) 
             
             ).subscribe()
-            const data = await readFile('./src/dataset.json');
-            this.books = JSON.parse(data.toString());  
+              
             
         }
         catch (err) {
