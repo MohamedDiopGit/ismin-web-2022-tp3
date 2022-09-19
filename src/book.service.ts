@@ -7,18 +7,15 @@ export class BookService implements OnModuleInit {
     private books: BookDto[] =[];
 
 
-    onModuleInit() {
-        return readFile('./dataset.json')
-        
-            .then((data) => {   
-                this.books = JSON.parse(data.toString());
-            })
-
-            .catch((err) => {
-                throw new err;
-            })
-
-     }
+    async onModuleInit() {
+        try{
+            let data = await readFile('./src/dataset.json');  
+            this.books = JSON.parse(data.toString());  
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
 
     addBook(book: BookDto){
         if(!this.books.find((value) => value.title === book.title)){ 
