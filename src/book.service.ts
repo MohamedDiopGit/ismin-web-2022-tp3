@@ -1,21 +1,24 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { BookDto } from './interface/Book.dto';
-import { readFile } from 'fs';
+import { readFile } from 'fs/promises';
 
 @Injectable()
 export class BookService implements OnModuleInit {
     private books: BookDto[] =[];
 
 
-    onModuleInit(){
-        readFile('./dataset.json', 'utf8', (error, data) => {
-            if(error){
-                console.log(error);
-                throw error;
-            }
-            this.books = JSON.parse(data);
-        })
-    }
+    onModuleInit() {
+        return readFile('./dataset.json')
+        
+            .then((data) => {   
+                this.books = JSON.parse(data.toString());
+            })
+
+            .catch((err) => {
+                throw new err;
+            })
+
+     }
 
     addBook(book: BookDto){
         if(!this.books.find((value) => value.title === book.title)){ 
