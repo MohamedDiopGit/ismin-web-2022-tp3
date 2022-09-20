@@ -12,26 +12,25 @@ export class BookService implements OnModuleInit {
 
     constructor(private readonly httpService: HttpService) {}
 
-    async onModuleInit() : Promise<void>{
-        // try{
-        //     let data = await readFile('./src/dataset.json');  
-        //     this.books = JSON.parse(data.toString());  
-        // }
-        // catch (err) {
-        //     console.log('Err: $(err)');
-        // }
+    private async loadBooksFromFile() : Promise<void> {
+        try{
+            let data = await readFile('./src/dataset.json');  
+            this.books = JSON.parse(data.toString());  
+        }
+        catch (err) {
+            console.log('Err: $(err)');
+        }
+    }
 
+    private async loadBooksFromAPI(): Promise<void> {
         try{
 
-            const data = await readFile('./src/dataset.json');
-            this.books = JSON.parse(data.toString());
-            const dataApi = this.httpService.get<ApiBook[]>('https://api.npoint.io/40518b0773c787f94072');
-
-            const dataConverted = dataApi.pipe(
+            this.httpService.get<ApiBook[]>('https://api.npoint.io/1c88134cf081609075b7')
+            .pipe(
                 map( (response) => {return response.data}),
                 tap( (apibooks) => { 
                     apibooks.forEach( (e) => {
-                        return this.books.push(
+                        this.books.push(
                             {
                                 title: e.title,
                                 author : e.authors, 
@@ -41,11 +40,15 @@ export class BookService implements OnModuleInit {
                     )}
                 ) 
             
-            ).subscribe() 
+            ).subscribe();
         }
         catch (err) {
             console.log('Err: $(err)');
         }
+    }
+
+    async onModuleInit() : Promise<void>{
+        await Promise.all( [ this.loadBooksFromFile(), this.loadBooksFromAPI() ] );
         console.log(this.books);
     }
 
